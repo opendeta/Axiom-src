@@ -1,0 +1,87 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	android:background="#FAFAFA">
+	<LinearLayout
+		android:id="@+id/linear3"
+		android:layout_width="match_parent"
+		android:layout_height="60dp"
+		android:padding="5dp"
+		android:background="#FFFFFF"
+		android:gravity="center_vertical"
+		android:orientation="horizontal"
+		android:elevation="4dp">
+		<androidx.cardview.widget.CardView
+			android:id="@+id/linear4"
+			android:layout_width="0dp"
+			android:layout_height="45dp"
+			android:layout_marginLeft="5dp"
+			app:cardBackgroundColor="#FFFFFF"
+			android:layout_weight="1"
+			app:cardCornerRadius="25dp"
+			app:cardElevation="6dp">
+			<LinearLayout
+				android:id="@+id/linear6"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:paddingLeft="15dp"
+				android:paddingRight="10dp"
+				android:gravity="center_vertical"
+				android:orientation="horizontal">
+				<EditText
+					android:id="@+id/url_input"
+					android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:background="@android:color/transparent"
+					android:textSize="14sp"
+					android:textColor="#333333"
+					android:hint="Search or type URL"
+					android:singleLine="true"
+					android:imeOptions="actionSearch"
+					android:layout_weight="1"
+					android:inputType="textUri" />
+				<ImageView
+					android:id="@+id/btn_clear_text"
+					android:layout_width="30dp"
+					android:layout_height="30dp"
+					android:padding="6dp"
+					android:scaleType="center"
+					android:src="@android:drawable/ic_menu_close_clear_cancel"
+					android:alpha="0.5" />
+			</LinearLayout>
+		</androidx.cardview.widget.CardView>
+		<TextView
+			android:id="@+id/btn_menu"
+			android:layout_width="45dp"
+			android:layout_height="45dp"
+			android:background="?attr/selectableItemBackgroundBorderless"
+			android:gravity="center_horizontal|center_vertical"
+			android:text="⋮"
+			android:textSize="26sp"
+			android:textStyle="bold"
+			android:textColor="#333333"
+			android:focusable="true" />
+	</LinearLayout>
+	<ProgressBar
+		android:id="@+id/web_progress"
+		android:layout_width="match_parent"
+		android:layout_height="3dp"
+		android:indeterminate="false"
+		style="?android:progressBarStyleHorizontal"
+		android:progressDrawable="@android:drawable/progress_horizontal"
+		android:progressTint="#2196F3"
+		android:visibility="gone" />
+	<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+		android:id="@+id/swipe_refresh"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+		<WebView
+			android:id="@+id/browser_webview"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent" />
+	</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+</LinearLayout>
