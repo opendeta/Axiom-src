@@ -239,16 +239,15 @@ public class MainActivity extends AppCompatActivity {
 						String u = urlInput.getText().toString().trim();
 						if (!u.isEmpty()) {
 							
-							// আগে চেক করবে 'view-source:' লিখেছে কি না
+							
 							if (!checkAndLoadSource(myBrowser, u)) {
-								// না হলে সাধারণ ব্রাউজিং বা গুগল সার্চ
+								
 								if (!u.startsWith("http://") && !u.startsWith("https://")) {
 									u = "https://www.google.com/search?q=" + u;
 								}
 								myBrowser.loadUrl(u);
 							}
-							
-							// 🎯 ক্র্যাশ ফিক্স: INPUT_METHOD_SERVICE ব্যবহার করা হলো
+						
 							android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager) getSystemService(android.content.Context.INPUT_METHOD_SERVICE);
 							if (imm != null) {
 								imm.hideSoftInputFromWindow(urlInput.getWindowToken(), 0);
@@ -279,7 +278,7 @@ public class MainActivity extends AppCompatActivity {
 		s.setBuiltInZoomControls(isZoomEnabled);
 		s.setDisplayZoomControls(false); 
 		
-		// ৫ নম্বর ব্লকের DownloadManager এটাকে ওভাররাইড করে নেবে, তাই এটা সেফটির জন্য থাকলো
+		// 5n Block's DownloadManager will override it,
 		myBrowser.setDownloadListener(new android.webkit.DownloadListener() {
 			@Override
 			public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
@@ -503,18 +502,17 @@ public class MainActivity extends AppCompatActivity {
 		}, 150);
 	}
 	{
-	} // ২ নম্বর ব্লক ক্লোজ
+	} 
 	
-	// ইন্টারনেট চেক মেথড
 	private boolean isNetworkAvailable() {
 		try {
 			android.net.ConnectivityManager cm = (android.net.ConnectivityManager) getSystemService(android.content.Context.CONNECTIVITY_SERVICE);
 			android.net.NetworkInfo netInfo = cm.getActiveNetworkInfo();
 			return netInfo != null && netInfo.isConnected();
-		} catch (Exception e) { return true; } // এরর হলে ধরে নেবে নেট আছে
+		} catch (Exception e) { return true; } 
 	}
 	
-	// অফলাইন লেআউট ফিক্স
+	// Offline Layout
 	private void showOfflineLayout() {
 		android.widget.LinearLayout root = new android.widget.LinearLayout(this);
 		root.setOrientation(android.widget.LinearLayout.VERTICAL);
@@ -547,33 +545,32 @@ public class MainActivity extends AppCompatActivity {
 		setContentView(root);
 	}
 	
-	// ক্র্যাশ ফিক্সড লঞ্চার
+	
 	{
 		new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
 			try {
-				// ১. আগে চেক করবে সব আইডি ঠিক আছে কি না
+				
 				if (findViewById(R.id.url_input) == null || findViewById(R.id.browser_webview) == null) {
-					// যদি আইডি খুঁজে না পায়, তবে ক্র্যাশ না করে সাইলেন্ট থাকবে
+				
 					return; 
 				}
 				
-				// ২. ইন্টারনেট চেক
+		
 				if (!isNetworkAvailable()) {
 					showOfflineLayout();
 				}
-				// অনলাইন থাকলে startMyBrowser মেথড আগের ব্লক থেকেই কল হবে
+				
 			} catch (Exception e) {
-				// কোনো এরর হলে অ্যাপ ক্র্যাশ করবে না
+				
 			}
-		}, 300); // ডিলে একটু বাড়ানো হয়েছে সেফটির জন্য
+		}, 300); 
 	}
 	
 	private void crash_fixer_final() {
-	} // 3 নম্বর ব্লক ক্লোজ
+	} 
 	
-	// জাভা লেভেলে একটি টেম্পোরারি ফ্ল্যাগ
 	private boolean isSingleSearchAction = false;
-	private String lastInjectedUrl = ""; // একই পেজে বারবার ইনজেকশন ঠেকানোর জন্য
+	private String lastInjectedUrl = ""; // 🔁 *Loop Handler *
 	
 	public class BotInterface {
 		@android.webkit.JavascriptInterface
@@ -584,7 +581,8 @@ public class MainActivity extends AppCompatActivity {
 				if (urlInput != null && myBrowser != null) {
 					urlInput.setText(newUrl);
 					
-					// চেক: যদি কোডে কোনো 'setStatus' না থাকে, তবে এটা Single Search
+					// 📌 if   'setStatus' not found, return Single Search
+					
 					String currentCode = getSharedPreferences("BotPrefs", 0).getString("saved_bot_script", "");
 					if (!currentCode.contains("Bot.setStatus")) {
 						isSingleSearchAction = true; 
@@ -599,7 +597,7 @@ public class MainActivity extends AppCompatActivity {
 		
 		@android.webkit.JavascriptInterface
 		public void setStatus(String status) {
-			isSingleSearchAction = false; // অমর বটের জন্য ফ্ল্যাগ অফ
+			isSingleSearchAction = false; // immortal Bot Flag Off.
 			getSharedPreferences("BotSystem", 0).edit().putString("step_status", status).apply();
 		}
 		
@@ -610,19 +608,18 @@ public class MainActivity extends AppCompatActivity {
 	}
 	
 	private void startMasterBot(final android.webkit.WebView webview) {
-		// জাভাস্ক্রিপ্ট ইন্টারফেস যোগ করা
+		//JavaScript injection 🔥
 		webview.addJavascriptInterface(new BotInterface(), "Bot");
 		
-		// 🎯 WebViewClient ছাড়াই নজরদারি করার মাস্টার ট্রিক (Handler Polling)
 		final android.os.Handler handler = new android.os.Handler(android.os.Looper.getMainLooper());
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				// চেক করছে বট চলছে কি না এবং পেজ ১০০% লোড হয়েছে কি না
+				
 				if (isBotRunning && webview.getProgress() == 100) {
 					String currentUrl = webview.getUrl();
 					
-					// পেজ লোড শেষ হয়েছে এবং আগে এই পেজে ইনজেক্ট করা হয়নি এমন অবস্থায়
+					// 🔁 Reinjection 
 					if (currentUrl != null && !currentUrl.equals(lastInjectedUrl)) {
 						lastInjectedUrl = currentUrl;
 						
@@ -632,13 +629,13 @@ public class MainActivity extends AppCompatActivity {
 						String savedCode = getSharedPreferences("BotPrefs", 0).getString("saved_bot_script", "");
 						
 						if (!savedCode.isEmpty()) {
-							// যদি শুধু Bot.search("...") লিখে রান করেন
+							// only Bot.search("...") 
 							if (isSingleSearchAction) {
 								getSharedPreferences("BotPrefs", 0).edit().putString("saved_bot_script", "").apply();
 								isSingleSearchAction = false; 
-								// ইনজেকশন হবে না, সরাসরি ফেরত যাবে
+				
 							} else {
-								// অমর বটের জন্য ১.৫ সেকেন্ড ডিলে ইনজেকশন
+								// 1.5s Delay for immortal Bot 
 								webview.postDelayed(() -> {
 									if (isBotRunning) {
 										webview.evaluateJavascript("(function(){ try{ " + savedCode + " }catch(e){console.error(e);} })();", null);
@@ -648,10 +645,10 @@ public class MainActivity extends AppCompatActivity {
 						}
 					}
 				} else if (!isBotRunning) {
-					lastInjectedUrl = ""; // বট বন্ধ থাকলে হিস্ট্রি ক্লিয়ার
+					lastInjectedUrl = ""; 
 				}
 				
-				// প্রতি ১ সেকেন্ড পর পর চেক করবে (WebViewClient এর প্রয়োজন নেই!)
+				
 				handler.postDelayed(this, 1000);
 			}
 		});
@@ -665,13 +662,13 @@ public class MainActivity extends AppCompatActivity {
 	}
 	
 	private void bot_logic_v4_no_client() {
-	} // 4 নম্বর ব্লক ক্লোজ
+	} 
 	
-	// 🎯 Blob & Data URL ডাউনলোডের জন্য জাদুকরী সেভার মেথড (FIXED)
+	// 🎯 Blob & Data URL Handler 
 	private void saveBase64ToFile(String base64Data, String mimeType, String fileName) {
 		runOnUiThread(() -> {
 			try {
-				// এরর ফিক্স: ল্যাম্বডার ভেতর পরিবর্তনের জন্য নতুন লোকাল ভেরিয়েবল নেওয়া হলো
+			
 				String currentName = fileName; 
 				
 				String pureBase64 = base64Data;
@@ -684,13 +681,13 @@ public class MainActivity extends AppCompatActivity {
 				java.io.File path = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS);
 				java.io.File file = new java.io.File(path, currentName);
 				
-				// ডুপ্লিকেট নাম হ্যান্ডেল করার লজিক
+				
 				int count = 1;
 				while(file.exists()) {
 					int dotIndex = fileName.lastIndexOf(".");
 					String namePart = dotIndex != -1 ? fileName.substring(0, dotIndex) : fileName;
 					String extPart = dotIndex != -1 ? fileName.substring(dotIndex) : "";
-					currentName = namePart + "_" + count + extPart; // এখন আর এরর আসবে না
+					currentName = namePart + "_" + count + extPart; 
 					file = new java.io.File(path, currentName);
 					count++;
 				}
@@ -802,33 +799,30 @@ public class MainActivity extends AppCompatActivity {
 	}
 	
 	private void universal_download_fix() {
-	} // 5 নম্বর ব্লক ক্লোজ
+	} 
 	
 	private void activateUltraAdBlock(final android.webkit.WebView webview) {
-		// ১. পপ-আপের মূলে আঘাত (এটি ১ নম্বর ব্লকের ফাইল চুজ বা ডাউনলোড নষ্ট করবে না)
+		// Pop-up Blocker
 		webview.getSettings().setSupportMultipleWindows(false);
 		webview.getSettings().setJavaScriptCanOpenWindowsAutomatically(false);
-		
-		// ২. আমরা কোনো নতুন WebViewClient সেট করবো না। 
-		// পরিবর্তে আমরা একটি ডাইনামিক ইন্টারভাল চালাবো যা ১ নম্বর ব্লকের ইঞ্জিনের ভেতরে অ্যাড মারবে।
 		
 		final android.os.Handler blockerHandler = new android.os.Handler(android.os.Looper.getMainLooper());
 		blockerHandler.post(new Runnable() {
 			@Override
 			public void run() {
 				if (isAdBlockEnabled) {
-					// এই জাভাস্ক্রিপ্টটি ১ নম্বর ব্লকের বটের সাথে কোনো ঝামেলা করবে না
+					
 					String adDestroyer = "(function() { " +
-					"/* ১. হার্ডকোর অ্যাড রিমুভার (YouTube & APKMirror Special) */ " +
+					"/* Hardcore Ad Blocker*/ " +
 					"var ads = document.querySelectorAll('.adsbygoogle, ins, .ad-showing, .ad-container, #player-ads, [id^=\"google_ads\"], .premium-ad'); " +
 					"for(var i=0; i<ads.length; i++) { ads[i].style.display='none'; ads[i].remove(); } " +
 					
-					"/* ২. পপ-আপ কিলার (নতুন ট্যাব খোলা বন্ধ) */ " +
+					"/*Pop-up Killer (New Tab opening)*/ " +
 					"window.open = function() { return null; }; " +
 					"var links = document.getElementsByTagName('a'); " +
 					"for(var j=0; j<links.length; j++) { if(links[j].target === '_blank') links[j].target = '_self'; } " +
 					
-					"/* ৩. ইউটিউব অ্যাড স্কিপার */ " +
+					"/* Youtube Ad skiper*/ " +
 					"var skip = document.querySelector('.ytp-ad-skip-button, .ytp-ad-skip-button-modern'); " +
 					"if(skip) skip.click(); " +
 					"var v = document.querySelector('video'); " +
@@ -837,14 +831,14 @@ public class MainActivity extends AppCompatActivity {
 					
 					webview.evaluateJavascript(adDestroyer, null);
 				}
-				// প্রতি ১.৫ সেকেন্ড পর পর চেক করবে (যাতে অ্যাড লোড হওয়ার সুযোগ না পায়)
+			
 				blockerHandler.postDelayed(this, 1500);
 			}
 		});
 	}
 	
 	{
-		// ১ নম্বর ব্লকের startMyBrowser() শেষ হওয়ার ১ সেকেন্ড পর এটি ব্যাকগ্রাউন্ডে চালু হবে
+		
 		new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
 			android.webkit.WebView myMainWeb = findViewById(R.id.browser_webview);
 			if (myMainWeb != null) {
@@ -854,24 +848,21 @@ public class MainActivity extends AppCompatActivity {
 	}
 	
 	private void block_6_final_power() {
-	} // 6 নম্বর ব্লক ক্লোজ (যদি থাকে)
+	} 
 	
 	private void injectNativeBotEngine(final android.webkit.WebView webview) {
-		// ১ নম্বর ব্লককে কোনো ডিস্টার্ব না করে নতুন একটি "জাভাস্ক্রিপ্ট ইন্টারফেস" যুক্ত করা হচ্ছে।
-		// এটি জাভাস্ক্রিপ্ট কোডকে সরাসরি অ্যান্ড্রয়েড সিস্টেমের হার্ডওয়্যার ইভেন্টে পরিণত করবে।
-		
+				
 		webview.addJavascriptInterface(new Object() {
 			
-			// ১. নেটিভ ক্লিক (যেখানে X এবং Y পিক্সেল দেওয়া থাকবে)
 			@android.webkit.JavascriptInterface
 			public void click(final float x, final float y) {
 				webview.post(() -> {
-					// ওয়েবের পিক্সেলকে অ্যান্ড্রয়েড স্ক্রিনের পিক্সেলে কনভার্ট করা
+				
 					float density = webview.getResources().getDisplayMetrics().density;
 					float realX = x * density;
 					float realY = y * density;
 					
-					// আসল মানুষের মতো স্ক্রিনে টাচ ইভেন্ট তৈরি করা
+					// *Human like native Tuch"*
 					long time = android.os.SystemClock.uptimeMillis();
 					android.view.MotionEvent down = android.view.MotionEvent.obtain(time, time, android.view.MotionEvent.ACTION_DOWN, realX, realY, 0);
 					android.view.MotionEvent up = android.view.MotionEvent.obtain(time, time + 50, android.view.MotionEvent.ACTION_UP, realX, realY, 0);
@@ -884,7 +875,7 @@ public class MainActivity extends AppCompatActivity {
 				});
 			}
 			
-			// ২. নেটিভ স্ক্রল বা সোয়াইপ (Swipe)
+			// *2: Native Scroll/Swipe*
 			@android.webkit.JavascriptInterface
 			public void swipe(final float startX, final float startY, final float endX, final float endY) {
 				webview.post(() -> {
@@ -910,7 +901,7 @@ public class MainActivity extends AppCompatActivity {
 				});
 			}
 			
-			// ৩. শুধু নিচে বা উপরে স্ক্রল করার জন্য (Delta Scroll)
+			//Dulta Scroll 
 			@android.webkit.JavascriptInterface
 			public void scrollBy(final float distanceX, final float distanceY) {
 				webview.post(() -> {
@@ -922,11 +913,12 @@ public class MainActivity extends AppCompatActivity {
 				});
 			}
 			
-		}, "AppBot"); // এই "AppBot" নামেই ইউজার জাভাস্ক্রিপ্ট থেকে কল করবে
+		}, "AppBot"); // User will call JavaScript with *AppBot*
+		
 	}
 	
 	{
-		// ১ নম্বর ব্লকের স্টার্ট হওয়ার ১ সেকেন্ড পর এই ইঞ্জিনটি লোড হবে
+	
 		new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
 			android.webkit.WebView botWeb = findViewById(R.id.browser_webview);
 			if (botWeb != null) {
@@ -936,89 +928,84 @@ public class MainActivity extends AppCompatActivity {
 	}
 	
 	private void native_bot_active() {
-	} // 7 নম্বর ব্লক ক্লোজ (যদি থাকে)
+	} 
 	
 	private void setupDefaultBrowserAndHistory() {
-		// ১. সাথে সাথে সাদা পর্দা দিয়ে স্ক্রিন ঢেকে দেওয়া (যাতে গুগল সার্চ দেখা না যায়)
-		// android.R.id.content হলো আপনার অ্যাপের মূল লেআউটের রুট
+		
 		final android.view.ViewGroup rootView = findViewById(android.R.id.content);
 		final android.view.View splashScreen = new android.view.View(this);
 		splashScreen.setBackgroundColor(android.graphics.Color.WHITE);
 		splashScreen.setLayoutParams(new android.view.ViewGroup.LayoutParams(-1, -1));
 		
-		// স্ক্রিনের উপর সাদা পর্দা বসানো হলো
 		if (rootView != null) {
 			rootView.addView(splashScreen);
 		}
 		
-		// ২. ১.৬ সেকেন্ড ডিলে (১ম ও ৩য় ব্লকের কাজ শেষ হওয়ার পর)
 		new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
 			try {
 				final android.webkit.WebView myBrowser = findViewById(R.id.browser_webview);
 				final android.widget.EditText urlInput = findViewById(R.id.url_input);
 				
 				if (myBrowser != null && urlInput != null) {
-					// ইনটেন্ট বা সেভ করা লিঙ্ক চেক
+					// Saved Url Check
 					android.content.Intent intent = getIntent();
 					android.net.Uri intentData = intent.getData();
 					android.content.SharedPreferences pref = getSharedPreferences("BrowserHistory", 0);
 					String lastUrl = pref.getString("last_url", "");
 					
 					if (intentData != null) {
-						// ডিফল্ট ব্রাউজার হিসেবে অন্য অ্যাপ থেকে লিঙ্ক আসলে
+						// Default Browser Logic   
 						String targetUrl = intentData.toString();
 						urlInput.setText(targetUrl);
 						myBrowser.loadUrl(targetUrl);
 					} 
 					else if (!lastUrl.isEmpty() && !lastUrl.equals("https://www.google.com/")) {
-						// সেভ করা শেষ লিঙ্ক লোড করা
+						// Load Saved Url 
 						urlInput.setText(lastUrl);
 						myBrowser.loadUrl(lastUrl);
 					}
 				}
 				
-				// ৩. কাজ শেষ, সাদা পর্দা সরিয়ে ফেলা (যাতে ইউজার এখন পেজ দেখতে পায়)
+			
 				if (rootView != null && splashScreen.getParent() != null) {
 					rootView.removeView(splashScreen);
 				}
-				
-				// ৪. ব্যাকগ্রাউন্ডে লিঙ্ক সেভ করার আধুনিক টাইমার (Memory Safe)
+			
 				final android.os.Handler historyHandler = new android.os.Handler(android.os.Looper.getMainLooper());
 				historyHandler.postDelayed(new Runnable() {
 					@Override
 					public void run() {
 						if (myBrowser != null && myBrowser.getUrl() != null) {
 							String currentUrl = myBrowser.getUrl();
-							// গুগল সার্চ রেজাল্ট বা হোমপেজ বারবার সেভ করার দরকার নেই
+							
 							if (!currentUrl.isEmpty() && !currentUrl.startsWith("https://www.google.com/search")) {
 								getSharedPreferences("BrowserHistory", 0).edit()
 								.putString("last_url", currentUrl).apply();
 							}
 						}
-						// প্রতি 2 সেকেন্ড পর পর লুপটি চলতে থাকবে
+						
 						historyHandler.postDelayed(this, 2000); 
 					}
-				}, 4000); // প্রথমবার 4 সেকেন্ড পর শুরু হবে
+				}, 4000); 
 				
 			} catch (Exception e) {
-				// কোনো এরর হলেও যেন সাদা পর্দা আটকে না থাকে
+				
 				if (rootView != null && splashScreen.getParent() != null) {
 					rootView.removeView(splashScreen);
 				}
 			}
-		}, 2000); // আপনার কথা অনুযায়ী 2 সেকেন্ড ডিলে
+		}, 2000);
 	}
 	
 	{
-		// অ্যাপ চালু হওয়ার সাথে সাথেই (মাত্র ২০ms ডিলে দিয়ে) এটা ফায়ার হবে
-		// যাতে সাদা পর্দাটা চোখের পলকে চলে আসে
+		
 		new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
 			setupDefaultBrowserAndHistory();
 		}, 20);
 	}
 	
 	private void default_browser_and_history_active() {
-	} // 8 নম্বর ব্লক ক্লোজ
+	} 
 	
 	private void fixRefreshLogicSmartly() {
 		final androidx.swiperefreshlayout.widget.SwipeRefreshLayout swipe = findViewById(R.id.swipe_refresh);
@@ -1026,37 +1013,32 @@ public class MainActivity extends AppCompatActivity {
 		
 		if (swipe != null && myBrowser != null) {
 			
-			// ১. ডিফল্টভাবে রিফ্রেশ মোড অন রাখা
 			isRefreshModeEnabled = true; 
 			
-			// ২. স্মার্ট মনিটরিং লজিক (১ নম্বর ব্লকের কোনো ক্লায়েন্ট ডিস্টার্ব করবে না)
 			final android.os.Handler refreshHandler = new android.os.Handler(android.os.Looper.getMainLooper());
 			refreshHandler.post(new Runnable() {
 				@Override
 				public void run() {
 					if (myBrowser != null && swipe != null) {
 						
-						// [সমস্যা ৩ এর সমাধান]: পেজের একদম উপরে (scrollY == 0) থাকলে তবেই রিফ্রেশ কাজ করবে
 						if (isRefreshModeEnabled) {
 							swipe.setEnabled(myBrowser.getScrollY() == 0);
 						} else {
-							// [সমস্যা ১ এর সমাধান]: মেনু থেকে অফ করলে সাথে সাথে ডিজেবল
 							swipe.setEnabled(false);
 							if (swipe.isRefreshing()) swipe.setRefreshing(false);
 						}
 						
-						// [সমস্যা ২ এর সমাধান]: চাকা ঘোরা বন্ধ করা (WebChromeClient ছাড়াই!)
-						// Progress 95 এর উপরে গেলেই চাকা থামিয়ে দেব, কারণ অনেক সাইটে 100 হতে একটু দেরি হয়
+						
 						if (myBrowser.getProgress() >= 95 && swipe.isRefreshing()) {
 							swipe.setRefreshing(false);
 						}
 					}
-					// প্রতি ৩০০ মিলিসেকেন্ড পর পর দ্রুত চেক করবে
+					
 					refreshHandler.postDelayed(this, 300);
 				}
 			});
 			
-			// ৩. রিফ্রেশ অ্যাকশন
+			// Refresh Action 
 			swipe.setOnRefreshListener(() -> {
 				if (isRefreshModeEnabled) {
 					myBrowser.reload();
@@ -1068,26 +1050,26 @@ public class MainActivity extends AppCompatActivity {
 	}
 	
 	{
-		// ৭ নম্বর ব্লকের ডিলের পর এটি কাজ শুরু করবে
+		
 		new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
 			fixRefreshLogicSmartly();
 		}, 2000);
 	}
 	
 	private void smart_refresh_watcher_active() {
-	} // ৯ নম্বর ব্লক/মেথডটা এখানে ক্লোজ করে দিলাম
+	} 
 	
 	@Override
 	public void onBackPressed() {
 		android.webkit.WebView myBrowser = findViewById(R.id.browser_webview);
 		if (myBrowser != null && myBrowser.canGoBack()) {
-			myBrowser.goBack(); // আগের পেজে যাবে
+			myBrowser.goBack();
 		} else {
-			super.onBackPressed(); // অ্যাপ থেকে বের হবে
+			super.onBackPressed(); 
 		}
 	}
 	
-	// এজ সোয়াইপ (Edge Swipe) এবং ক্রোম-স্টাইল মাল্টিটাস্কিং মেথড
+	// 🔁 Edge-Swipe
 	private void setupEdgeSwipe() {
 		final androidx.swiperefreshlayout.widget.SwipeRefreshLayout swipe = findViewById(R.id.swipe_refresh);
 		final android.webkit.WebView myBrowser = findViewById(R.id.browser_webview);
@@ -1100,7 +1082,6 @@ public class MainActivity extends AppCompatActivity {
 		int swipeIndex = parentLayout.indexOfChild(swipe);
 		parentLayout.removeView(swipe);
 		
-		// ১. কোড দিয়ে বাম দিকের অ্যারো (Back Arrow) বানানো
 		android.graphics.Bitmap bmpLeft = android.graphics.Bitmap.createBitmap(100, 100, android.graphics.Bitmap.Config.ARGB_8888);
 		android.graphics.Canvas canvasLeft = new android.graphics.Canvas(bmpLeft);
 		android.graphics.Paint paint = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
@@ -1108,7 +1089,7 @@ public class MainActivity extends AppCompatActivity {
 		paint.setStrokeWidth(10f);
 		paint.setStrokeCap(android.graphics.Paint.Cap.ROUND);
 		paint.setStrokeJoin(android.graphics.Paint.Join.ROUND);
-		paint.setColor(0xFFFFFFFF); // ডিফল্ট সাদা রঙ
+		paint.setColor(0xFFFFFFFF); 
 		
 		android.graphics.Path pathLeft = new android.graphics.Path();
 		pathLeft.moveTo(60, 20); 
@@ -1118,7 +1099,7 @@ public class MainActivity extends AppCompatActivity {
 		
 		final android.widget.ImageView leftArrow = new android.widget.ImageView(this);
 		leftArrow.setImageBitmap(bmpLeft);
-		leftArrow.setColorFilter(0xFF757575, android.graphics.PorterDuff.Mode.SRC_IN); // প্রথমে ধূসর
+		leftArrow.setColorFilter(0xFF757575, android.graphics.PorterDuff.Mode.SRC_IN); 
 		
 		final android.graphics.drawable.GradientDrawable bgLeft = new android.graphics.drawable.GradientDrawable();
 		bgLeft.setShape(android.graphics.drawable.GradientDrawable.OVAL);
@@ -1130,9 +1111,9 @@ public class MainActivity extends AppCompatActivity {
 		android.widget.FrameLayout.LayoutParams lpLeft = new android.widget.FrameLayout.LayoutParams(120, 120);
 		lpLeft.gravity = android.view.Gravity.START | android.view.Gravity.CENTER_VERTICAL;
 		leftArrow.setLayoutParams(lpLeft);
-		leftArrow.setTranslationX(-150); // স্ক্রিনের বাইরে লুকিয়ে রাখা
+		leftArrow.setTranslationX(-150);
 		
-		// ২. কোড দিয়ে ডান দিকের অ্যারো (Forward Arrow) বানানো
+		//Forward Arrow
 		android.graphics.Bitmap bmpRight = android.graphics.Bitmap.createBitmap(100, 100, android.graphics.Bitmap.Config.ARGB_8888);
 		android.graphics.Canvas canvasRight = new android.graphics.Canvas(bmpRight);
 		
@@ -1157,8 +1138,8 @@ public class MainActivity extends AppCompatActivity {
 		lpRight.gravity = android.view.Gravity.END | android.view.Gravity.CENTER_VERTICAL;
 		rightArrow.setLayoutParams(lpRight);
 		rightArrow.setTranslationX(150);
+				
 		
-		// ৩. টাচ-হ্যান্ডলার ফ্রেমলেআউট (সোয়াইপ কন্ট্রোল)
 		android.widget.FrameLayout gestureContainer = new android.widget.FrameLayout(this) {
 			float startX = 0, startY = 0;
 			boolean isEdgeSwiping = false;
@@ -1171,7 +1152,7 @@ public class MainActivity extends AppCompatActivity {
 					case android.view.MotionEvent.ACTION_DOWN:
 					startX = ev.getX();
 					startY = ev.getY();
-					// ব্যাক বা ফরওয়ার্ড করার ইতিহাস থাকলে তবেই টানতে দেবে
+					
 					if (startX < 80 && myBrowser.canGoBack()) {
 						isEdgeSwiping = true;
 						isLeftEdge = true;
@@ -1208,11 +1189,11 @@ public class MainActivity extends AppCompatActivity {
 					if (isLeftEdge && deltaX > 0) {
 						leftArrow.setTranslationX(-150 + Math.min(pullDist, 300));
 						if (pullDist > THRESHOLD) {
-							bgLeft.setColor(0xFF2196F3); // ব্যাকগ্রাউন্ড নীল
-							leftArrow.setColorFilter(0xFFFFFFFF, android.graphics.PorterDuff.Mode.SRC_IN); // আইকন সাদা
+							bgLeft.setColor(0xFF2196F3); 
+							leftArrow.setColorFilter(0xFFFFFFFF, android.graphics.PorterDuff.Mode.SRC_IN);
 						} else {
-							bgLeft.setColor(0xFFEEEEEE); // ব্যাকগ্রাউন্ড ধূসর
-							leftArrow.setColorFilter(0xFF757575, android.graphics.PorterDuff.Mode.SRC_IN); // আইকন ধূসর
+							bgLeft.setColor(0xFFEEEEEE); 
+							leftArrow.setColorFilter(0xFF757575, android.graphics.PorterDuff.Mode.SRC_IN); 
 						}
 					} 
 					else if (!isLeftEdge && deltaX < 0) {
@@ -1231,7 +1212,7 @@ public class MainActivity extends AppCompatActivity {
 						if (isLeftEdge) myBrowser.goBack();
 						else myBrowser.goForward();
 					}
-					// ছেড়ে দিলে স্মুথলি লুকিয়ে যাবে
+					
 					leftArrow.animate().translationX(-150).setDuration(200).start();
 					rightArrow.animate().translationX(150).setDuration(200).start();
 					isEdgeSwiping = false;
@@ -1253,7 +1234,7 @@ public class MainActivity extends AppCompatActivity {
 		parentLayout.addView(gestureContainer, swipeIndex);
 	}
 	
-	// অ্যাপ চালু হওয়ার সাথে সাথে মেথডটি কল করে দেবে
+	
 	{
 		new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(new Runnable() {
 			@Override
@@ -1263,11 +1244,11 @@ public class MainActivity extends AppCompatActivity {
 		}, 300);
 	}
 	
-	// নিচের এই ফাঁকা ব্লকটা স্কেচওয়্যারের অটো-জেনারেটেড ব্র্যাকেট সামাল দেবে
-	private void dummy() {
-	} // 10 নম্বর ব্লক/মেথডটা এখানে ক্লোজ করে দিলাম
 	
-	// লং প্রেস ইভেন্ট সেট করার মেথড
+	private void dummy() {
+	} 
+	
+	// Long Press invent listener
 	private void setupLongPressDialog() {
 		final android.webkit.WebView myBrowser = findViewById(R.id.browser_webview);
 		if (myBrowser == null) return;
@@ -1278,14 +1259,14 @@ public class MainActivity extends AppCompatActivity {
 				android.webkit.WebView.HitTestResult result = myBrowser.getHitTestResult();
 				if (result != null) {
 					int type = result.getType();
-					// যদি এটা কোনো সাধারণ লিঙ্ক (7) বা ইমেজ লিঙ্ক (8) হয়
+					
 					if (type == android.webkit.WebView.HitTestResult.SRC_ANCHOR_TYPE || 
 					type == android.webkit.WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE) {
 						
 						String url = result.getExtra();
 						if (url != null && !url.isEmpty()) {
 							showLinkOptionsDialog(url, myBrowser);
-							return true; // true রিটার্ন করায় ড্র্যাগ-ড্রপ বাতিল হয়ে গেল!
+							return true; 
 						}
 					}
 				}
@@ -1294,32 +1275,28 @@ public class MainActivity extends AppCompatActivity {
 		});
 	}
 	
-	// ক্রোম স্টাইলের সুন্দর ডায়ালগ দেখানোর মেথড
 	private void showLinkOptionsDialog(final String url, final android.webkit.WebView webView) {
 		final android.app.Dialog dialog = new android.app.Dialog(this);
 		
-		// ডায়ালগের মেইন লেআউট
 		android.widget.LinearLayout root = new android.widget.LinearLayout(this);
 		root.setOrientation(android.widget.LinearLayout.VERTICAL);
 		root.setPadding(50, 50, 50, 50);
 		
 		android.graphics.drawable.GradientDrawable bg = new android.graphics.drawable.GradientDrawable();
-		bg.setCornerRadius(35f); // ক্রোমের মতো সুন্দর গোল কর্নার
+		bg.setCornerRadius(35f); 
 		bg.setColor(0xFFFFFFFF);
 		root.setBackground(bg);
 		
-		// ১. একদম উপরে লিঙ্কের টেক্সট (যত বড়ই হোক, নিচে নামবে)
 		android.widget.TextView urlText = new android.widget.TextView(this);
 		urlText.setText(url);
-		urlText.setTextColor(0xFF1976D2); // একটু গাঢ় নীল
+		urlText.setTextColor(0xFF1976D2); 
 		urlText.setTextSize(15);
 		urlText.setPadding(0, 0, 0, 40);
-		urlText.setSingleLine(false); // লম্বা লিঙ্ক নিচে নামার অনুমতি
+		urlText.setSingleLine(false); 
 		urlText.setMaxLines(4);
 		urlText.setEllipsize(android.text.TextUtils.TruncateAt.END);
 		root.addView(urlText);
 		
-		// ২. Copy Link বাটন
 		android.widget.TextView btnCopy = createDialogButton("Copy Link");
 		btnCopy.setOnClickListener(new android.view.View.OnClickListener() {
 			@Override
@@ -1333,7 +1310,7 @@ public class MainActivity extends AppCompatActivity {
 		});
 		root.addView(btnCopy);
 		
-		// ৩. Open URL বাটন
+		// 3. Open URL Button 
 		android.widget.TextView btnOpen = createDialogButton("Open URL");
 		btnOpen.setOnClickListener(new android.view.View.OnClickListener() {
 			@Override
@@ -1344,7 +1321,7 @@ public class MainActivity extends AppCompatActivity {
 		});
 		root.addView(btnOpen);
 		
-		// ৪. Share URL বাটন (সবার নিচে)
+		// 4. Share URL Button 
 		android.widget.TextView btnShare = createDialogButton("Share URL");
 		btnShare.setOnClickListener(new android.view.View.OnClickListener() {
 			@Override
@@ -1359,18 +1336,16 @@ public class MainActivity extends AppCompatActivity {
 		root.addView(btnShare);
 		
 		dialog.setContentView(root);
-		
-		// ব্যাকগ্রাউন্ড ট্রান্সপারেন্ট করা যাতে কর্নারগুলো সুন্দর দেখায়
+	
 		if (dialog.getWindow() != null) {
 			dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
-			int width = (int)(getResources().getDisplayMetrics().widthPixels * 0.85); // স্ক্রিনের ৮৫% জায়গা নেবে
+			int width = (int)(getResources().getDisplayMetrics().widthPixels * 0.85); 
 			dialog.getWindow().setLayout(width, android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
 		}
 		
 		dialog.show();
 	}
 	
-	// বাটনগুলোর ডিজাইন করার হেল্পার মেথড
 	private android.widget.TextView createDialogButton(String text) {
 		android.widget.TextView btn = new android.widget.TextView(this);
 		btn.setText(text);
@@ -1378,11 +1353,10 @@ public class MainActivity extends AppCompatActivity {
 		btn.setTextSize(17);
 		btn.setTypeface(null, android.graphics.Typeface.BOLD);
 		btn.setPadding(20, 25, 20, 25);
-		btn.setBackgroundResource(android.R.drawable.list_selector_background); // টাচ করলে রিপল (Ripple) ইফেক্ট হবে
+		btn.setBackgroundResource(android.R.drawable.list_selector_background); 
 		return btn;
 	}
 	
-	// অ্যাপ চালু হওয়ার পর অটোমেটিক এই লজিকগুলো সেট করার জন্য
 	{
 		new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(new Runnable() {
 			@Override
@@ -1392,11 +1366,10 @@ public class MainActivity extends AppCompatActivity {
 		}, 500);
 	}
 	
-	// নিচের এই ফাঁকা ব্লকটা স্কেচওয়্যারের অটো-জেনারেটেড ব্র্যাকেট সামাল দেবে
 	private void dummy12() {
-	} // 11 নম্বর ব্লক ক্লোজ (Toast Error Fixed)
+	} 
 	
-	// 🎯 view-source: হ্যান্ডেল করার মূল মেথড
+	// 🎯 *view-source:* Handler
 	private void handleViewSource(final android.webkit.WebView webview, String sourceUrl) {
 		try {
 			String cleanUrl = sourceUrl.substring(12).trim();
@@ -1452,15 +1425,14 @@ public class MainActivity extends AppCompatActivity {
 			android.widget.Toast.makeText(getApplicationContext(), "Something went wrong!", android.widget.Toast.LENGTH_SHORT).show();
 		}
 	}
-	
-	// 🎯 ইউজার ইনপুট চেক করার মেথড
+
 	public boolean checkAndLoadSource(final android.webkit.WebView webview, String input) {
 		try {
 			if (input != null) {
 				String trimmedInput = input.trim();
 				if (trimmedInput.toLowerCase().startsWith("view-source:")) {
 					if (trimmedInput.length() <= 12) {
-						// 🎯 এখানে SHORT কেটে LENGTH_SHORT করে দেওয়া হলো
+						
 						android.widget.Toast.makeText(getApplicationContext(), "Please provide a link!", android.widget.Toast.LENGTH_SHORT).show();
 						return true;
 					}
@@ -1475,33 +1447,30 @@ public class MainActivity extends AppCompatActivity {
 	}
 	
 	private void view_source_final_fix() {
-	} // 12 নম্বর ব্লক/মেথডটা এখানে ক্লোজ করে দিলাম
+	} 
 	
-	// 🛑 লুপ ঠেকানোর এবং ডায়ালগ ট্র্যাকিংয়ের জন্য ফ্ল্যাগ
 	private boolean isBotDialogShowing = false;
 	
-	// 🎯 ১৩. Code.Bot() এর জন্য ডায়ালগ স্টাইল মেথড (Anti-Loop & Anti-Duplicate Fix)
+	// 🎯 13. Code.Bot() Method (Anti-Loop & Anti-Duplicate Fix)
 	private void setupBotAPI() {
 		final android.webkit.WebView myBrowser = findViewById(R.id.browser_webview);
 		if (myBrowser == null) return;
 		
-		// জাভাস্ক্রিপ্ট ইন্টারফেস সেট করা
+		//JavaScript interface 
 		myBrowser.addJavascriptInterface(new Object() {
 			
-			// ১. ইউজার যদি শুধু Code.Bot(); লেখে
 			@android.webkit.JavascriptInterface
 			public void Bot() {
 				new android.os.Handler(android.os.Looper.getMainLooper()).post(new Runnable() {
 					@Override
 					public void run() {
-						// যদি ইতিমধ্যে ডায়ালগ ওপেন থাকে, তবে লুপে পড়ে আবার কল করবে না
+						
 						if (isBotDialogShowing) return;
 						
 						String currentUrl = myBrowser.getUrl();
 						if (currentUrl != null && !currentUrl.isEmpty()) {
 							isBotDialogShowing = true;
-							
-							// 🔥 লুপ ঠেকানোর ব্রহ্মাস্ত্র: বট প্রসেস বন্ধ এবং মেমোরি থেকে কোড ডিলিট!
+				
 							isBotRunning = false; 
 							getSharedPreferences("BotPrefs", 0).edit().putString("saved_bot_script", "").apply();
 							
@@ -1513,7 +1482,7 @@ public class MainActivity extends AppCompatActivity {
 				});
 			}
 			
-			// ২. ইউজার যদি Code.Bot("https://..."); লেখে
+		
 			@android.webkit.JavascriptInterface
 			public void Bot(final String targetUrl) {
 				new android.os.Handler(android.os.Looper.getMainLooper()).post(new Runnable() {
@@ -1524,7 +1493,7 @@ public class MainActivity extends AppCompatActivity {
 						if (targetUrl != null && !targetUrl.trim().isEmpty()) {
 							isBotDialogShowing = true;
 							
-							// 🔥 লুপ ঠেকানোর ব্রহ্মাস্ত্র: বট প্রসেস বন্ধ এবং মেমোরি থেকে কোড ডিলিট!
+					
 							isBotRunning = false; 
 							getSharedPreferences("BotPrefs", 0).edit().putString("saved_bot_script", "").apply();
 							
@@ -1538,24 +1507,22 @@ public class MainActivity extends AppCompatActivity {
 		}, "Code");
 	}
 	
-	// 🎨 বটের জন্য কাস্টম ডায়ালগ বানানোর স্পেশাল মেথড
 	private void showBotSourceDialog(final android.webkit.WebView webView, final String sourceUrl) {
 		android.content.Context context = webView.getContext();
 		final android.app.Dialog dialog = new android.app.Dialog(context);
 		
-		// মেইন লেআউট (সবকিছু সেন্টারে থাকবে)
+		
 		android.widget.LinearLayout root = new android.widget.LinearLayout(context);
 		root.setOrientation(android.widget.LinearLayout.VERTICAL);
 		root.setPadding(60, 70, 60, 70);
 		root.setGravity(android.view.Gravity.CENTER);
 		
-		// ডায়ালগের ব্যাকগ্রাউন্ড (সাদা এবং ক্রোমের মতো সুন্দর গোল কর্নার)
+		
 		android.graphics.drawable.GradientDrawable bg = new android.graphics.drawable.GradientDrawable();
 		bg.setCornerRadius(40f);
 		bg.setColor(0xFFFFFFFF);
 		root.setBackground(bg);
 		
-		// ১. টাইটেল টেক্সট
 		android.widget.TextView titleText = new android.widget.TextView(context);
 		titleText.setText("View Page Source with Bot?");
 		titleText.setTextColor(0xFF333333); 
@@ -1565,7 +1532,6 @@ public class MainActivity extends AppCompatActivity {
 		titleText.setPadding(0, 0, 0, 60); 
 		root.addView(titleText);
 		
-		// ২. "View" বাটন (Run বাটনের মতো প্রিমিয়াম রাউন্ডেড কার্ড স্টাইল)
 		android.widget.TextView btnView = new android.widget.TextView(context);
 		btnView.setText("View");
 		btnView.setTextColor(0xFFFFEBEE); 
@@ -1586,27 +1552,24 @@ public class MainActivity extends AppCompatActivity {
 		btnParams.setMargins(20, 0, 20, 0); 
 		btnView.setLayoutParams(btnParams);
 		
-		// বাটনে ক্লিক করলে লিংক ওপেন হবে
 		btnView.setOnClickListener(new android.view.View.OnClickListener() {
 			@Override
 			public void onClick(android.view.View v) {
 				checkAndLoadSource(webView, sourceUrl);
-				dialog.dismiss(); // ডায়ালগ বন্ধ হবে
+				dialog.dismiss(); 
 			}
 		});
 		root.addView(btnView);
 		
-		// 🔄 ইউজার যদি কিছু না করে ডায়ালগ কেটে দেয় বা View-তে চাপ দেয়, তখন ফ্ল্যাগ রিসেট করার লিসেনার
 		dialog.setOnDismissListener(new android.content.DialogInterface.OnDismissListener() {
 			@Override
 			public void onDismiss(android.content.DialogInterface d) {
-				isBotDialogShowing = false; // পরবর্তী ফ্রেশ রান করার জন্য ফ্ল্যাগ রেডি
+				isBotDialogShowing = false; 
 			}
 		});
 		
 		dialog.setContentView(root);
 		
-		// ব্যাকগ্রাউন্ড ট্রান্সপারেন্ট করা
 		if (dialog.getWindow() != null) {
 			dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
 			int width = (int)(context.getResources().getDisplayMetrics().widthPixels * 0.85); 
@@ -1616,7 +1579,6 @@ public class MainActivity extends AppCompatActivity {
 		dialog.show();
 	}
 	
-	// অ্যাপ চালু হওয়ার পর অটোমেটিক এই বট সার্ভিস চালু করা
 	{
 		new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(new Runnable() {
 			@Override
@@ -1626,18 +1588,16 @@ public class MainActivity extends AppCompatActivity {
 		}, 500);
 	}
 	
-	// নিচের এই ফাঁকা ব্লকটা স্কেচওয়্যারের অটো-জেনারেটেড ব্র্যাকেট সামাল দেবে
 	private void dummybotopen() {
-	} // 13 নম্বর ব্লক এখানে ক্লোজ হলো
+	} 
 	
 	// 🎯 ১৩. URL Bar Auto Hide/Show on Scroll (Smooth & Anti-Jitter/Hang Fix)
 	private void setupScrollHidingToolbar() {
 		final android.webkit.WebView myBrowser = findViewById(R.id.browser_webview);
-		final android.view.View toolbar = findViewById(R.id.linear3); // আপনার URL Bar
+		final android.view.View toolbar = findViewById(R.id.linear3);
 		
 		if (myBrowser == null || toolbar == null) return;
 		
-		// currentAnim[0] = অ্যানিমেশন ট্র্যাকার, isHidden[0] = লুকানো আছে কি না
 		final android.animation.ValueAnimator[] currentAnim = {null};
 		final boolean[] isHidden = {false};
 		
@@ -1649,17 +1609,14 @@ public class MainActivity extends AppCompatActivity {
 					int dy = scrollY - oldScrollY; 
 					final int tHeight = toolbar.getHeight();
 					
-					if (tHeight == 0) return; // অ্যাপ লোড হওয়ার আগে কিছু করবে না
-					
-					// বর্তমান মার্জিন বের করা (যাতে অ্যানিমেশন মাঝপথ থেকেও ঘুরতে পারে)
+					if (tHeight == 0) return; 
+				
 					android.widget.LinearLayout.LayoutParams params = (android.widget.LinearLayout.LayoutParams) toolbar.getLayoutParams();
 					int currentMargin = params.topMargin;
 					
-					// ⬇️ নিচে স্ক্রল (Hide) - Threshold 30 দেওয়া হলো যাতে হালকা বাউন্সে ট্রিগার না হয়
 					if (dy > 30 && scrollY > 100 && !isHidden[0]) {
 						isHidden[0] = true; 
 						
-						// আগের কোনো অ্যানিমেশন চললে সেটা বাতিল! (হ্যাং ঠেকানোর ব্রহ্মাস্ত্র)
 						if (currentAnim[0] != null) currentAnim[0].cancel(); 
 						
 						currentAnim[0] = android.animation.ValueAnimator.ofInt(currentMargin, -tHeight);
@@ -1673,11 +1630,10 @@ public class MainActivity extends AppCompatActivity {
 						});
 						currentAnim[0].start();
 					}
-					// ⬆️ উপরে স্ক্রল (Show) - Threshold -30 (একটু জোরে টানলেই শুধু আসবে)
+				
 					else if (dy < -30 && isHidden[0]) {
 						isHidden[0] = false;
 						
-						// আগের কোনো অ্যানিমেশন চললে সেটা বাতিল!
 						if (currentAnim[0] != null) currentAnim[0].cancel(); 
 						
 						currentAnim[0] = android.animation.ValueAnimator.ofInt(currentMargin, 0);
@@ -1696,7 +1652,6 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 	
-	// অ্যাপ চালু হওয়ার পর অটোমেটিক এই ম্যাজিক সেট করার জন্য
 	{
 		new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(new Runnable() {
 			@Override
@@ -1706,8 +1661,7 @@ public class MainActivity extends AppCompatActivity {
 		}, 600);
 	}
 	
-	// নিচের এই ফাঁকা ব্লকটা স্কেচওয়্যারের অটো-জেনারেটেড ব্র্যাকেট সামাল দেবে
 	private void dummy13() {
 	}
 	
-}
+}
