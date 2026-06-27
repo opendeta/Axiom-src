@@ -1,0 +1,13 @@
+### Axiom Android Automation Browser & Bot
+
+*A high-performance, open-source Android browser equipped with a persistent automation engine designed for raw web-scripting and advanced headless-style tasks.*
+
+#### Core Technical Capabilities:
+
+* **Immortal Execution Engine:** Bypasses standard WebViewClient limitations via a continuous 1-second interval polling handler (`startMasterBot`) to guarantee unbroken, persistent custom JavaScript injection.
+* **Low-Level Hardware Motion Injection:** Bridges JavaScript with the Android OS layout using the custom `AppBot` interface, executing native screen actions (`dispatchTouchEvent`) like programmatic clicks and precise multi-touch gestures.
+* **Automated Stream Interception:** Captures complex `blob:` and data-stream protocols directly via intercepted XHR requests, dynamically converting them into base64 payloads to bypass web sandboxes and pipe data straight into Android's native download manager.
+* **Asynchronous Thread Isolation:** Implements custom runnable-loops and localized state-monitoring to isolate high-frequency automation handlers from the main UI thread, ensuring crash-hardened stability under aggressive scraping cycles.
+*Code Bot*: View Page code with bots.
+
+Zero bloat, zero background telemetry, absolute low-level control.
