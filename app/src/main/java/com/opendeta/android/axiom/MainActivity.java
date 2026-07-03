@@ -1,4 +1,3 @@
-import os
 package com.opendeta.android.axiom;
 import android.animation.*;
 import android.app.*;
@@ -476,6 +475,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(root);
     }
 
+//  Bot.search(), Bot.setstatus(),… 
+
     public class BotInterface {
         @JavascriptInterface
         public void search(final String newUrl) {
@@ -508,7 +509,7 @@ public class MainActivity extends AppCompatActivity {
             return getSharedPreferences("BotSystem", 0).getString("step_status", "idle");
         }
     }
-// Bot.search(), Bot.setstatus(),…
+  
     private void startMasterBot(final WebView webview) {
         webview.addJavascriptInterface(new BotInterface(), "Bot");
 
@@ -548,6 +549,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+// Local file downloader
     private void saveBase64ToFile(String base64Data, String mimeType, String fileName) {
         runOnUiThread(() -> {
             try {
@@ -585,7 +587,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-// Local File Downloader 
+
     private void setupDownloadSystem(final WebView webview) {
         webview.addJavascriptInterface(new Object() {
             @JavascriptInterface
@@ -684,7 +686,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
+   
+// AppBot interface (Hardware level Click, Swipe/Scroll)
     private void injectNativeBotEngine(final WebView webview) {
         webview.addJavascriptInterface(new Object() {
             @JavascriptInterface
@@ -727,7 +730,7 @@ public class MainActivity extends AppCompatActivity {
                     up.recycle();
                 });
             }
-// AppBot interface (Hardware level Click)
+     
             @JavascriptInterface
             public void scrollBy(final float distanceX, final float distanceY) {
                 webview.post(() -> {
@@ -739,7 +742,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }, "AppBot");
     }
-//Default Browser Action 
+    
+// Default Browser Action 
     private void setupDefaultBrowserAndHistory() {
         final ViewGroup rootView = findViewById(android.R.id.content);
         final View splashScreen = new View(this);
@@ -846,7 +850,7 @@ public class MainActivity extends AppCompatActivity {
             super.onBackPressed();
         }
     }
-//Edge-swipe 
+// Edge-swipe 
     private void setupEdgeSwipe(SwipeRefreshLayout swipe, WebView myBrowser) {
         if (swipe == null || myBrowser == null) return;
         ViewGroup parentLayout = (ViewGroup) swipe.getParent();
@@ -996,7 +1000,8 @@ public class MainActivity extends AppCompatActivity {
         gestureContainer.addView(rightArrow);
         parentLayout.addView(gestureContainer, swipeIndex);
     }
-
+    
+// Long Press Dialog 
     private void setupLongPressDialog(WebView myBrowser) {
         myBrowser.setOnLongClickListener(v -> {
             WebView.HitTestResult result = myBrowser.getHitTestResult();
@@ -1083,6 +1088,7 @@ public class MainActivity extends AppCompatActivity {
         return btn;
     }
 
+// “view-source:” Method 
     private void handleViewSource(final WebView webview, String sourceUrl) {
         try {
             String cleanUrl = sourceUrl.substring(12).trim();
@@ -1239,7 +1245,8 @@ public class MainActivity extends AppCompatActivity {
         }
         dialog.show();
     }
-
+    
+// Pull to UrlBar Hiding 
     private void setupScrollHidingToolbar(WebView myBrowser) {
         final View toolbar = findViewById(R.id.linear3); 
         if (myBrowser == null || toolbar == null) return;
@@ -1280,6 +1287,7 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
+    
 //Cleaner.Bot() Method 
     private void setupCleanerAPI(WebView myBrowser) {
         myBrowser.addJavascriptInterface(new Object() {
@@ -1424,8 +1432,6 @@ public class MainActivity extends AppCompatActivity {
         dialog.setOnDismissListener(d -> isCleanerDialogShowing = false);
         dialog.setContentView(root);
 
-        if (dialog.getWindow() != null) {
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-  
+        if (d
 
-// Axiom Force Sync: 2026-07-03T03:01:51.780Z
+// Axiom Force Sync: 2026-07-03T09:50:43.775Z
