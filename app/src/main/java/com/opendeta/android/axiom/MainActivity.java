@@ -1,6 +1,5 @@
 import os
 package com.opendeta.android.axiom;
-
 import android.animation.*;
 import android.app.*;
 import android.content.*;
@@ -509,7 +508,7 @@ public class MainActivity extends AppCompatActivity {
             return getSharedPreferences("BotSystem", 0).getString("step_status", "idle");
         }
     }
-
+// Bot.search(), Bot.setstatus(),…
     private void startMasterBot(final WebView webview) {
         webview.addJavascriptInterface(new BotInterface(), "Bot");
 
@@ -586,7 +585,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
+// Local File Downloader 
     private void setupDownloadSystem(final WebView webview) {
         webview.addJavascriptInterface(new Object() {
             @JavascriptInterface
@@ -657,11 +656,11 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Downloading: " + fileName, Toast.LENGTH_SHORT).show();
                 }
             } catch (Exception e) {
-                Toast.makeText(getApplicationContext(), "Download Error!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Download Error! Check Permission (Storage)", Toast.LENGTH_SHORT).show();
             }
         });
     }
-
+// Ad Blocker 
     private void activateUltraAdBlock(final WebView webview) {
         Handler blockerHandler = new Handler(Looper.getMainLooper());
         blockerHandler.post(new Runnable() {
@@ -728,7 +727,7 @@ public class MainActivity extends AppCompatActivity {
                     up.recycle();
                 });
             }
-
+// AppBot interface (Hardware level Click)
             @JavascriptInterface
             public void scrollBy(final float distanceX, final float distanceY) {
                 webview.post(() -> {
@@ -740,7 +739,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }, "AppBot");
     }
-
+//Default Browser Action 
     private void setupDefaultBrowserAndHistory() {
         final ViewGroup rootView = findViewById(android.R.id.content);
         final View splashScreen = new View(this);
@@ -847,7 +846,7 @@ public class MainActivity extends AppCompatActivity {
             super.onBackPressed();
         }
     }
-
+//Edge-swipe 
     private void setupEdgeSwipe(SwipeRefreshLayout swipe, WebView myBrowser) {
         if (swipe == null || myBrowser == null) return;
         ViewGroup parentLayout = (ViewGroup) swipe.getParent();
@@ -1166,7 +1165,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
             }
-
+// Code.Bot() Method 
             @JavascriptInterface
             public void Bot(final String targetUrl) {
                 new Handler(Looper.getMainLooper()).post(() -> {
@@ -1281,7 +1280,7 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
-
+//Cleaner.Bot() Method 
     private void setupCleanerAPI(WebView myBrowser) {
         myBrowser.addJavascriptInterface(new Object() {
             @JavascriptInterface
@@ -1427,11 +1426,6 @@ public class MainActivity extends AppCompatActivity {
 
         if (dialog.getWindow() != null) {
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            int width = (int)(context.getResources().getDisplayMetrics().widthPixels * 0.85); 
-            dialog.getWindow().setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT);
-        }
-        dialog.show();
-    }
-}
+  
 
-// Axiom Force Sync: 2026-07-03T02:14:40.643Z
+// Axiom Force Sync: 2026-07-03T03:01:51.780Z
