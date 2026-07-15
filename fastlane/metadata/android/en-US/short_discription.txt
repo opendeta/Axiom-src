@@ -1,3 +1,1 @@
-## New Bot Added: 
-## *Code.Bot()*  for Viewing page source Code quickly.
-## *Cleaner.Bot()* interface for deleting Cookies.
+A powerful open-source mobile automation browser.
