@@ -38,6 +38,6 @@ Want to start automating? Learn how to utilize the native Axiom bridge inside yo
 
 ## 📜 License & Legal
 
-This project is licensed under the **GPL-3.0 License** - see the official [LICENSE](https://github.com/opendeta/Axiom-src/LICENSE) file for details. 
+This project is licensed under the **GPL-3.0 License** - see the official [LICENSE](https://github.com/opendeta/Axiom-src/blob/main/LICENSE) file for details. 
 
 *Disclaimer: Axiom is intended for legitimate web automation, testing, and scraping purposes. Please respect the Terms of Service (ToS) of the websites you automate.*
