@@ -8,7 +8,7 @@
 • *Bot.search()* Native bridge for searching with bot.
 # • *AppBot()* interface for Android System-level Clicks, Swipes & Scrolls with Bot.
 
- Start your Android Automation with Axiom!
+ Start your Web Automation with Axiom!
 [Download the compiled APK of Axiom by clicking here.](https://opendeta.github.io/oapk)
 
 [See various codes for making bots in Axiom.](https://opendeta.github.io/cs)
