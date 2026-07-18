@@ -6,7 +6,7 @@
 • *Code.Bot()* interface for Viewing page source code Directly.
 • *Cleaner.Bot()* method for deleting site Cookies.
 • *Bot.search()* Native bridge for searching with bot.
-# • *AppBot()* interface for Android System-level Clicks, Swipes & Scrolls with Bot.
+• *AppBot()* interface for Android System-level Clicks, Swipes & Scrolls with Bot.
 
  Start your Web Automation with Axiom!
 [Download the compiled APK of Axiom by clicking here.](https://opendeta.github.io/oapk)
