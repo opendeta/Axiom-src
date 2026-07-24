@@ -82,10 +82,10 @@ public class MainActivity extends AppCompatActivity {
     private void initializeLogic() {
         android.os.Handler mainHandler = new android.os.Handler(android.os.Looper.getMainLooper());
 
-        // ১. ব্রাউজার স্টার্ট
+        // 1. Browser start
         mainHandler.postDelayed(() -> startMyBrowser(), 150);
 
-        // ২. ইন্টারনেট ও ক্র্যাশ চেকার
+        // 2. lnternet checker
         mainHandler.postDelayed(() -> {
             try {
                 if (findViewById(R.id.url_input) == null || findViewById(R.id.browser_webview) == null) return;
@@ -93,52 +93,52 @@ public class MainActivity extends AppCompatActivity {
             } catch (Exception ignored) {}
         }, 300);
 
-        // ৩. মাস্টার বট
+        // 3. Master Bot
         mainHandler.postDelayed(() -> {
             android.webkit.WebView myBrowser = findViewById(R.id.browser_webview);
             if (myBrowser != null) startMasterBot(myBrowser);
         }, 1000);
 
-        // ৪. ডাউনলোড সিস্টেম
+        // 4. Downloader
         runOnUiThread(() -> new android.os.Handler().postDelayed(() -> {
             android.webkit.WebView myBrowser = findViewById(R.id.browser_webview);
             if (myBrowser != null) setupDownloadSystem(myBrowser);
         }, 1500));
 
-        // ৫. আল্ট্রা অ্যাড-ব্লক
+        // 5. Ultra Ad & Pop-up Blocker 
         mainHandler.postDelayed(() -> {
             android.webkit.WebView myMainWeb = findViewById(R.id.browser_webview);
             if (myMainWeb != null) activateUltraAdBlock(myMainWeb);
         }, 1000);
 
-        // ৬. নেটিভ বট ইঞ্জিন
+        // 6. 🤖 Native Bot Engine 
         mainHandler.postDelayed(() -> {
             android.webkit.WebView botWeb = findViewById(R.id.browser_webview);
             if (botWeb != null) injectNativeBotEngine(botWeb);
         }, 1000);
 
-        // ৭. ডিফল্ট ব্রাউজার ও হিস্ট্রি
+        // 7. Default Browser & History 
         mainHandler.postDelayed(() -> setupDefaultBrowserAndHistory(), 20);
 
-        // ৮. এজ সোয়াইপ
+        // 8. Edge-swipe 
         mainHandler.postDelayed(() -> setupEdgeSwipe(), 300);
 
-        // ৯. লং প্রেস ডায়ালগ
+        // 9. Long Press Dialog 
         mainHandler.postDelayed(() -> setupLongPressDialog(), 500);
 
-        // ১০. বট এপিআই
+        // 10.  Custom Bot APl 
         mainHandler.postDelayed(() -> setupBotAPI(), 500);
 
-        // ১১. স্ক্রল হাইডিং টুলবার
+        // 11. Scroll hiding toolbor 
         mainHandler.postDelayed(() -> setupScrollHidingToolbar(), 600);
 
-        // ১২. ক্লিনার এপিআই
+        // 12. “Cleaner.Bot()” APl
         mainHandler.postDelayed(() -> setupCleanerAPI(), 500);
 
-        // ১৩. হাইড এপিআই
+        // 13. “Hide.ToolBar()” APl
         mainHandler.postDelayed(() -> setupHideAPI(), 550);
 
-        // ১৪. ফাস্ট এপিআই (শর্টকাট)
+        // 14. “Fast.Open()” APl (Shortcut maker)
         mainHandler.postDelayed(() -> setupFastAPI(), 650);
     }
     
@@ -346,7 +346,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        
+  // Download listener & Downloader   
         myBrowser.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> {
             try {
                 android.app.DownloadManager.Request request = new android.app.DownloadManager.Request(android.net.Uri.parse(url));
@@ -358,7 +358,7 @@ public class MainActivity extends AppCompatActivity {
                 request.setDestinationInExternalPublicDir(android.os.Environment.DIRECTORY_DOWNLOADS, android.webkit.URLUtil.guessFileName(url, contentDisposition, mimetype));
                 ((android.app.DownloadManager) getSystemService(DOWNLOAD_SERVICE)).enqueue(request);
                 showStatus("Downloading...");
-            } catch (Exception e) { showStatus("Download Error!"); }
+            } catch (Exception e) { showStatus("Download Error! Link broken or Permission denied! (Storage)"); }
         });
         
         myBrowser.setWebChromeClient(new android.webkit.WebChromeClient() {
@@ -590,6 +590,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(root);
     }
     
+    // Native Bot interface 
     public class BotInterface {
         @android.webkit.JavascriptInterface
         public void search(final String newUrl) {
@@ -662,7 +663,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    
+  
+// Local file downloader (e.g.data://,blob://)
+
     private void saveBase64ToFile(String base64Data, String mimeType, String fileName) {
         runOnUiThread(() -> {
             try {
@@ -703,6 +706,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
     
+  // Main downloader
     private void setupDownloadSystem(final android.webkit.WebView webview) {
         webview.addJavascriptInterface(new Object() {
             @android.webkit.JavascriptInterface
@@ -775,11 +779,12 @@ public class MainActivity extends AppCompatActivity {
                     android.widget.Toast.makeText(getApplicationContext(), "Downloading: " + fileName, android.widget.Toast.LENGTH_SHORT).show();
                 }
             } catch (Exception e) {
-                android.widget.Toast.makeText(getApplicationContext(), "Download failed! or  Permission Denied!(Storage)", android.widget.Toast.LENGTH_SHORT).show();
+                android.widget.Toast.makeText(getApplicationContext(), "Download failed! Link broken or  Permission Denied!(Storage)", android.widget.Toast.LENGTH_SHORT).show();
             }
         });
     }
     
+  // Ultra Ad & Pop-up Blocker 
     private void activateUltraAdBlock(final android.webkit.WebView webview) {
         webview.getSettings().setSupportMultipleWindows(false);
         webview.getSettings().setJavaScriptCanOpenWindowsAutomatically(false);
@@ -808,6 +813,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
     
+    // “AppBot” bot engine (Scroll, Swipe & Click!)
     private void injectNativeBotEngine(final android.webkit.WebView webview) {
         webview.addJavascriptInterface(new Object() {
             @android.webkit.JavascriptInterface
@@ -866,6 +872,7 @@ public class MainActivity extends AppCompatActivity {
         }, "AppBot");
     }
     
+  // Default Browser & last browsed url Auto search 
     private void setupDefaultBrowserAndHistory() {
         final android.view.ViewGroup rootView = findViewById(android.R.id.content);
         final android.view.View splashScreen = new android.view.View(this);
@@ -939,7 +946,7 @@ public class MainActivity extends AppCompatActivity {
             super.onBackPressed(); 
         }
     }
-    
+    // Edge-swipe 
     private void setupEdgeSwipe() {
         final androidx.swiperefreshlayout.widget.SwipeRefreshLayout swipe = findViewById(R.id.swipe_refresh);
         final android.webkit.WebView myBrowser = findViewById(R.id.browser_webview);
@@ -1099,7 +1106,7 @@ public class MainActivity extends AppCompatActivity {
         gestureContainer.addView(rightArrow);
         parentLayout.addView(gestureContainer, swipeIndex);
     }
-    
+   //  Showing dialog after long press on link 
     private void setupLongPressDialog() {
         final android.webkit.WebView myBrowser = findViewById(R.id.browser_webview);
         if (myBrowser == null) return;
@@ -1192,6 +1199,7 @@ public class MainActivity extends AppCompatActivity {
         return btn;
     }
     
+  // 'view-source:' interface 
     private void handleViewSource(final android.webkit.WebView webview, String sourceUrl) {
         try {
             String cleanUrl = sourceUrl.substring(12).trim();
@@ -1265,6 +1273,7 @@ public class MainActivity extends AppCompatActivity {
         return false; 
     }
     
+   //🤖: “Code.Bot()” APl
     private void setupBotAPI() {
         final android.webkit.WebView myBrowser = findViewById(R.id.browser_webview);
         if (myBrowser == null) return;
@@ -1367,7 +1376,7 @@ public class MainActivity extends AppCompatActivity {
         
         dialog.show();
     }
-    
+    // Hide the toolbar by scrolling
     private void setupScrollHidingToolbar() {
         final android.webkit.WebView myBrowser = findViewById(R.id.browser_webview);
         final android.view.View toolbar = findViewById(R.id.linear3); 
@@ -1414,7 +1423,7 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
-    
+    //🤖: “Cleaner.Bot()” APl/interface. (Delete Site data)
     private void setupCleanerAPI() {
         final android.webkit.WebView myBrowser = findViewById(R.id.browser_webview);
         if (myBrowser == null) return;
@@ -1616,7 +1625,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-    
+    //🤖: “Hide.ToolBar()” APl 
     private void setupHideAPI() {
         final android.webkit.WebView myBrowser = findViewById(R.id.browser_webview);
         if (myBrowser == null) return;
@@ -1723,6 +1732,8 @@ public class MainActivity extends AppCompatActivity {
         
         dialog.show();
     }
+    
+    // 🤖: “Fast.Open()” APl; Create web shortcuts & open faster with a click.
     
     private void setupFastAPI() {
         final android.webkit.WebView myBrowser = findViewById(R.id.browser_webview);
@@ -1898,14 +1909,6 @@ public class MainActivity extends AppCompatActivity {
         dialog.setContentView(root);
         
         if (dialog.getWindow() != null) {
-            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
-            int width = (int)(context.getResources().getDisplayMetrics().widthPixels * 0.90); 
-            dialog.getWindow().setLayout(width, android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
-        }
-        
-        dialog.show();
-    }
-}
+            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(a
 
-
-// Axiom Force Sync: 2026-07-20T03:31:05.883Z
+// Axiom Force Sync: 2026-07-24T02:27:05.244Z
